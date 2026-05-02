@@ -1,10 +1,4 @@
-try {
-  process.loadEnvFile();
-} catch (error) {
-  if (error.code !== "ENOENT") {
-    throw error;
-  }
-}
+require("dotenv").config();
 
 const app = require("./app");
 const SQUAD_ENV = (process.env.SQUAD_ENV || "sandbox").toLowerCase();
