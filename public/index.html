@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Squad Refund & Dispute Tester</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Squad by GTCO sandbox</p>
+        <h1>Refund and dispute settlement tester</h1>
+      </div>
+      <div class="status-pill" id="keyStatus">Checking configuration</div>
+    </header>
+
+    <main class="workspace">
+      <section class="overview" aria-label="Integration status">
+        <article>
+          <span>Environment</span>
+          <strong id="envValue">-</strong>
+        </article>
+        <article>
+          <span>Base URL</span>
+          <strong id="baseUrlValue">-</strong>
+        </article>
+        <article>
+          <span>Last action</span>
+          <strong id="lastActionValue">None yet</strong>
+        </article>
+      </section>
+
+      <nav class="tabs" aria-label="Tester sections">
+        <button class="tab active" data-tab="refund">Refund</button>
+        <button class="tab" data-tab="disputes">Disputes</button>
+        <button class="tab" data-tab="resolve">Resolve</button>
+        <button class="tab" data-tab="starter">Starter code</button>
+      </nav>
+
+      <section class="panel active" id="refund">
+        <div class="section-heading">
+          <h2>Initiate refund</h2>
+          <p>
+            Submit full or partial refunds using transaction references from
+            dashboard or webhook events.
+          </p>
+        </div>
+        <form id="refundForm" class="form-grid">
+          <label>
+            Gateway transaction ref
+            <input
+              name="gateway_transaction_ref"
+              required
+              placeholder="SQOKOY3167299494777_1_1"
+            />
+          </label>
+          <label>
+            Transaction ref
+            <input
+              name="transaction_ref"
+              required
+              placeholder="SQOKOY3167299494777"
+            />
+          </label>
+          <label>
+            Refund type
+            <select name="refund_type" id="refundType">
+              <option>Full</option>
+              <option>Partial</option>
+            </select>
+          </label>
+          <label>
+            Refund amount
+            <input
+              name="refund_amount"
+              id="refundAmount"
+              placeholder="20000"
+              disabled
+            />
+          </label>
+          <label class="wide">
+            Reason for refund
+            <textarea
+              name="reason_for_refund"
+              required
+              placeholder="Customer requested reversal"
+            ></textarea>
+          </label>
+          <button type="submit" class="primary">Send refund request</button>
+        </form>
+      </section>
+
+      <section class="panel" id="disputes">
+        <div class="section-heading row">
+          <div>
+            <h2>Dispute monitor</h2>
+            <p>
+              Fetch disputes and generate upload URLs for rejection evidence.
+            </p>
+          </div>
+          <button id="loadDisputes" class="secondary">Refresh disputes</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                <th>Transaction</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="disputeRows">
+              <tr>
+                <td colspan="4">No disputes loaded.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <form id="uploadUrlForm" class="compact-form">
+          <label>
+            Ticket ID
+            <input name="ticket_id" required placeholder="ticket_123" />
+          </label>
+          <label>
+            Evidence file name
+            <input name="file_name" required placeholder="delivery-proof.pdf" />
+          </label>
+          <button type="submit" class="secondary">Get upload URL</button>
+        </form>
+      </section>
+
+      <section class="panel" id="resolve">
+        <div class="section-heading">
+          <h2>Resolve dispute</h2>
+          <p>
+            Accept a chargeback or reject it after uploading evidence with the
+            generated URL.
+          </p>
+        </div>
+        <form id="resolveForm" class="form-grid">
+          <label>
+            Ticket ID
+            <input name="ticket_id" required placeholder="ticket_123" />
+          </label>
+          <label>
+            Action
+            <select name="action">
+              <option value="accepted">Accept chargeback</option>
+              <option value="rejected">Reject with evidence</option>
+            </select>
+          </label>
+          <label class="wide">
+            Uploaded file name
+            <input name="file_name" placeholder="delivery-proof.pdf" />
+          </label>
+          <button type="submit" class="primary">Resolve dispute</button>
+        </form>
+      </section>
+
+      <section class="panel" id="starter">
+        <div class="section-heading">
+          <h2>Starter integration</h2>
+          <p>
+            Use these backend calls from your app. Keep the secret key on the
+            server.
+          </p>
+        </div>
+        <pre><code>POST /api/refunds
+{
+  "gateway_transaction_ref": "SQOKOY3167299494777_1_1",
+  "transaction_ref": "SQOKOY3167299494777",
+  "refund_type": "Partial",
+  "reason_for_refund": "Customer requested reversal",
+  "refund_amount": "20000"
+}
+
+GET /api/disputes
+
+GET /api/disputes/:ticket_id/upload-url/:file_name
+
+POST /api/disputes/:ticket_id/resolve
+{
+  "action": "rejected",
+  "file_name": "delivery-proof.pdf"
+}</code></pre>
+      </section>
+
+      <aside class="response-panel" aria-label="API response">
+        <div class="response-header">
+          <h2>Response</h2>
+          <button id="clearResponse" class="ghost">Clear</button>
+        </div>
+        <pre id="responseBox">Waiting for a request.</pre>
+      </aside>
+    </main>
+
+    <script src="/public/app.js"></script>
+  </body>
+</html>
